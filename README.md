@@ -114,7 +114,7 @@ The separate `CDKToolkit` bootstrap stack remains. Check the AWS Console for ret
 
 - I learned how referencing the EC2 security group in the RDS inbound rule restricts MySQL connections to instances using that group. Disabling public access and placing RDS in isolated subnets provide additional network protection.
 
-- - I learned that manually installed software is lost when an EC2 instance is recreated. I addressed this by adding EC2 user-data commands in CDK to install the MySQL client automatically. I verified the installation on both fresh instances using `cloud-init status --wait` and `mysql --version`, without manually installing the client.. Software installed manually, such as the MySQL client, must be installed again. This showed me why automated software installation would make future deployments more consistent.
+-  I learned that manually installed software is lost when an EC2 instance is recreated. I addressed this by adding EC2 user-data commands in CDK to install the MySQL client automatically. I verified the installation on both fresh instances using `cloud-init status --wait` and `mysql --version`, without manually installing the client.. Software installed manually, such as the MySQL client, must be installed again. This showed me why automated software installation would make future deployments more consistent.
 ## Testing Evidence
 
 ### Initial deployment
