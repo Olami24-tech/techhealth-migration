@@ -57,7 +57,7 @@ export class TechhealthMigrationStack extends cdk.Stack {
 // Place one application instance in each Availability Zone's public subnet.
 // Both instances use the same security group and Systems Manager role.
 
-    new ec2.Instance(this, 'AppServerA', {
+   const appServerA = new ec2.Instance(this, 'AppServerA', {
       vpc,
       vpcSubnets: { subnets: [vpc.publicSubnets[0]] },
       instanceType: new ec2.InstanceType('t2.micro'),
@@ -66,7 +66,11 @@ export class TechhealthMigrationStack extends cdk.Stack {
       role: ec2Role,
       associatePublicIpAddress: true,
     });
-    new ec2.Instance(this, 'AppServerB', {
+  // Install the MySQL client automatically when this instance first starts.
+    appServerA.addUserData(
+    'dnf install -y mariadb105',
+);
+    const appServerB = new ec2.Instance(this, 'AppServerB', {
       vpc,
       vpcSubnets: { subnets: [vpc.publicSubnets[1]] },
       instanceType: new ec2.InstanceType('t2.micro'),
@@ -75,6 +79,10 @@ export class TechhealthMigrationStack extends cdk.Stack {
       role: ec2Role,
       associatePublicIpAddress: true,
     });
+    // Install the MySQL client automatically when this instance first starts.
+    appServerB.addUserData(
+    'dnf install -y mariadb105',
+);
 // Include isolated subnets from both Availability Zones in the DB subnet group.
 // The Single-AZ database runs in one subnet selected by RDS.
 

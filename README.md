@@ -114,7 +114,7 @@ The separate `CDKToolkit` bootstrap stack remains. Check the AWS Console for ret
 
 - I learned how referencing the EC2 security group in the RDS inbound rule restricts MySQL connections to instances using that group. Disabling public access and placing RDS in isolated subnets provide additional network protection.
 
-- I learned that destroying and recreating an EC2 instance produces a fresh server. Software installed manually, such as the MySQL client, must be installed again. This showed me why automated software installation would make future deployments more consistent.
+- - I learned that manually installed software is lost when an EC2 instance is recreated. I addressed this by adding EC2 user-data commands in CDK to install the MySQL client automatically. I verified the installation on both fresh instances using `cloud-init status --wait` and `mysql --version`, without manually installing the client.. Software installed manually, such as the MySQL client, must be installed again. This showed me why automated software installation would make future deployments more consistent.
 ## Testing Evidence
 
 ### Initial deployment
@@ -133,3 +133,19 @@ The separate `CDKToolkit` bootstrap stack remains. Check the AWS Console for ret
 - [Redeployment success](docs/screenshots/cdk-redeployed-success.png)
 - [Recreated AppServerA database connection](docs/screenshots/recreated-app-server-a-rds-connection.png)
 - [Recreated AppServerB database connection](docs/screenshots/recreated-app-server-b-rds-connection.png)
+
+### Improvements Following Instructor Feedback
+
+- [AppServerA automatic MySQL client installation](docs/screenshots/app-server-a-automated-client-install.png)
+- [AppServerB automatic MySQL client installation](docs/screenshots/app-server-b-automated-client-install.png)
+- [Shared EC2 security group with no inbound SSH](docs/screenshots/ec2-no-inbound-ssh.png)
+
+## Database Availability and Production Considerations
+
+This lab uses one Single-AZ RDS MySQL instance. If that instance or its Availability Zone becomes unavailable, both application servers lose database access. Running EC2 instances across two AZs does not remove this database dependency.
+
+For production, an RDS Multi-AZ DB instance deployment would provide a synchronously replicated standby in another AZ and automatic failover. Failover can still interrupt connections, so the application needs connection retry logic.
+
+Multi-AZ increases database costs. Single-AZ is retained here to control lab costs; production sizing and availability should reflect the application's requirements.
+
+Multi-AZ improves availability but does not replace backups.
